@@ -1,7 +1,6 @@
 package entry
 
 import (
-	"fmt"
 	"math"
 	"testing"
 	"time"
@@ -51,14 +50,10 @@ func TestParseText(t *testing.T) {
 
 func TestParseWhen(t *testing.T) {
 	entry, _ := NewEntry("friday: title. text")
-	// TODO how to test for "friday"?
-	/* this doesn't work - puzzling!!!!
-	fmt.Printf("%+v %v %d\n", entry.when, entry.when.Weekday() == time.Friday, time.Friday)
-	if entry.entryTime.Weekday() != time.Friday {
+	// but is it the right friday???
+	if entry.when.Weekday() != time.Friday {
 		t.Errorf("err parsing %s. Got %+v expected %+v", entry.whenStr, entry.when.Weekday(), time.Friday)
 	}
-	*/
-	fmt.Printf("test parse when: %+v\n", entry.when.Weekday())
 }
 
 func TestTags(t *testing.T) {
