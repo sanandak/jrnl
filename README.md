@@ -26,9 +26,10 @@ may include tags thus: `@tag1 and @tag2`, which will be added to the headline as
 
 ## Build
 
-`go get github.com/olebedev/when`
-`go build`
-`go install`
+  `go get github.com/sanandak/jrnl`
+  `go get github.com/olebedev/when`
+  `go build`
+  `go install`
 
 # See also
 
