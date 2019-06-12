@@ -88,7 +88,7 @@ func writeOrgFile(outf string, out []byte) {
 	// read the file
 	orgContents, err := ioutil.ReadFile(outf)
 	if err != nil {
-		log.Println("new file...")
+		log.Println("new file...", outf)
 	}
 
 	// open it again for writing
@@ -97,7 +97,7 @@ func writeOrgFile(outf string, out []byte) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	defer f.Close()
 	// search for today
 	// * Entries for 2019/6/11 <-- top level headline
 	todayTimeStamp := time.Now().Format("2006/01/02")
@@ -136,8 +136,7 @@ func useEditor() string {
 	}
 	path, err := exec.LookPath(editor)
 	if err != nil {
-		log.Printf("Error %s while looking up for %s!!", path, editor)
-		return ""
+		log.Fatal("Error no path for editor: ", path, editor)
 	}
 	//fmt.Printf("%s is available at %s\nCalling it with file %s \n", defaultEditor, path, tmpFile.Name())
 
@@ -149,16 +148,14 @@ func useEditor() string {
 	cmd.Stderr = os.Stderr
 	err = cmd.Start()
 	if err != nil {
-		log.Printf("Start failed: %s", err)
-		return ""
+		log.Fatal("External editor start failed", err)
 	}
 	//fmt.Printf("Waiting for command to finish.\n")
 	err = cmd.Wait()
 	//fmt.Printf("Command finished with error: %v\n", err)
 	raw, err := ioutil.ReadAll(tmpFile)
 	if err != nil {
-		log.Println("err reading tmp file", err)
-		return ""
+		log.Fatal("err reading tmp file", err)
 	}
 	//fmt.Println("emacs",raw)
 	return string(raw)

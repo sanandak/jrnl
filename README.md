@@ -36,3 +36,9 @@ I wrote this mainly to learn go - so this is a minimal program.  Please see `jrn
 a more-complete implementation, with filtering, search, etc. 
 
 This program doesn't have that because I use emacs to search the org file.
+
+Uses the fantastic library `github.com/olebedev/when` to parse the times.
+
+# TODO
+
+I want to learn about channels in go.  I will add a call to a web service to parse the when time (wolfram alpha? others?)
