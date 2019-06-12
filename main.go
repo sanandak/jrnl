@@ -70,7 +70,10 @@ func main() {
 		raw = strings.Join(flag.Args(), " ")
 	}
 	//fmt.Println("raw", raw)
-	ent, _ := entry.NewEntry(raw)
+	ent, err := entry.NewEntry(raw)
+	if err != nil {
+		log.Fatal("err creating new entry, ", err)
+	}
 	//fmt.Printf("%+v, %+v\n", ent, err)
 
 	out := ent.Print()
@@ -157,5 +160,6 @@ func useEditor() string {
 		log.Println("err reading tmp file", err)
 		return ""
 	}
+	//fmt.Println("emacs",raw)
 	return string(raw)
 }
