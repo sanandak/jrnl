@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"github.com/olebedev/when"
+	"github.com/sanandak/jrnl/wolfram"
 
 	"github.com/olebedev/when/rules/common"
 	"github.com/olebedev/when/rules/en"
@@ -92,7 +93,7 @@ func NewEntry(rawStr string) (entry *Entry, err error) {
 		entry.text = standardizeSpaces(rawStr[1:])
 	}
 	entry.entryTime = time.Now()
-	entry.parseWhen()
+	entry.parseWhenWolfram()
 	return entry, err
 
 	// tags @([A-Za-z0-9_]+)
@@ -147,6 +148,18 @@ func (entry *Entry) parseWhen() (err error) {
 		entry.whenErr = true
 	}
 	//fmt.Printf("r: %+v %+v\n", r, err)
+
+	return nil
+}
+func (entry *Entry) parseWhenWolfram() (err error) {
+	wtime, err := wolfram.QueryWolfram(entry.whenStr)
+	if err == nil {
+		entry.when = wtime
+	} else {
+		entry.when = time.Now()
+		entry.whenErr = true
+	}
+	fmt.Printf("r: %+v %+v\n", wtime, err)
 
 	return nil
 }

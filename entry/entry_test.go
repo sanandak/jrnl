@@ -56,6 +56,18 @@ func TestParseWhen(t *testing.T) {
 	}
 }
 
+func TestParseTime(t *testing.T) {
+	entry, _ := NewEntry("7pm today: title. text")
+	if entry.when.Hour() != 19 {
+		t.Errorf("err parsing %s. Got %+v expected %+v", entry.whenStr, entry.when.Hour(), 19)
+	}
+}
+func TestParseDate(t *testing.T) {
+	entry, _ := NewEntry("7/1/2019: title. text")
+	if entry.when.Month() != time.March && entry.when.Day() != 14 {
+		t.Errorf("err parsing %s. Got %+v expected 2019/3/14", entry.whenStr, entry.when)
+	}
+}
 func TestTags(t *testing.T) {
 	entry, _ := NewEntry("today: title. has @tag.")
 	if entry.tags[0] != "@tag" {
