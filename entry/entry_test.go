@@ -16,7 +16,7 @@ var (
 func TestEmptyEntry(t *testing.T) {
 	_, err := NewEntry("")
 	if err == nil {
-		t.Error("expected nil return got ", err)
+		t.Error("expected \"empty entry\" return got nil")
 	}
 }
 func TestTime(t *testing.T) {
@@ -51,5 +51,19 @@ func TestParseText(t *testing.T) {
 
 func TestParseWhen(t *testing.T) {
 	entry, _ := NewEntry("friday: title. text")
-	fmt.Printf("test parse entry: %+v when: %+v\n", entry, entry.when.String())
+	// TODO how to test for "friday"?
+	/* this doesn't work - puzzling!!!!
+	fmt.Printf("%+v %v %d\n", entry.when, entry.when.Weekday() == time.Friday, time.Friday)
+	if entry.entryTime.Weekday() != time.Friday {
+		t.Errorf("err parsing %s. Got %+v expected %+v", entry.whenStr, entry.when.Weekday(), time.Friday)
+	}
+	*/
+	fmt.Printf("test parse when: %+v\n", entry.when.Weekday())
+}
+
+func TestTags(t *testing.T) {
+	entry, _ := NewEntry("today: title. has @tag.")
+	if entry.tags[0] != "@tag" {
+		t.Errorf("err parsing tags in %s. got %s expected @tag", entry.text, entry.tags)
+	}
 }
