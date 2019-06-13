@@ -7,6 +7,7 @@ import (
 
 func TestQuery(t *testing.T) {
 	ans, err := QueryWolfram("8:17pm EDT on July 20th, 1969")
+	//ans, err := QueryWolfram("3/14/19")
 	if err != nil {
 		t.Error("err with query", err)
 	}

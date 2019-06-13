@@ -11,13 +11,17 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
+	"strconv"
 	"time"
 )
 
 var (
 	// possible return forms of time from wolfram
 	wolframTimeLayout = [...]string{
+		"Monday, January 2, 2006 at 3:04 pm MST",
 		"3:04 pm MST | Monday, January 2, 2006",
+		"3:04:05 pm MST | Monday, January 2, 2006",
 		"Monday, January 2, 2006",
 	}
 	// need to parse "x months y days ago/from now" and "x days ago/from now"
@@ -42,7 +46,8 @@ type Pod struct {
 	//The subpod elements of the pod
 	SubPods []SubPod `json:"subpods"`
 	//Marks the pod that displays the closest thing to a simple "answer" that Wolfram|Alpha can provide
-	Primary bool `json:"primary"`
+	Primary bool   `json:"primary"`
+	Title   string `json:"title"`
 }
 
 // SubPod - there is one subpod per pod, and the plaintext has the answer in...plaintext
@@ -96,27 +101,71 @@ func QueryWolfram(query string) (wtime time.Time, err error) {
 		log.Println("err unmarshalling", respBody)
 		return time.Now(), err
 	}
-	// look for the "Primary" pod
+	// look for primary pod
 	for _, p := range data.Res.Pods {
 		//fmt.Println(i, p)
 		if p.Primary {
 			wTimeStr := p.SubPods[0].Plaintext
-			fmt.Println("got it", p, wTimeStr)
+			//fmt.Println("got it", wTimeStr)
 			for _, layout := range wolframTimeLayout {
 				wtime, err = time.Parse(layout, wTimeStr)
 				if err == nil {
-					break
+					//fmt.Println("got it!!", wtime, err)
+					return wtime, nil
 				}
 			}
-			// TODO - parse answers of form x months 7 days ago
-			if err != nil {
-				log.Println("err parsing returned time", wtime, err)
-				return time.Now(), err
-			}
-			//fmt.Println(wtime, err)
-			return wtime, nil
 		}
 	}
+
+	// no luck in the primary, look in the "Input interpretation" pod
+	for _, p := range data.Res.Pods {
+		//fmt.Println(i, p)
+		if p.Title == "Input interpretation" {
+			wTimeStr := p.SubPods[0].Plaintext
+			//fmt.Println("ii got it", wTimeStr)
+			for _, layout := range wolframTimeLayout {
+				wtime, err = time.Parse(layout, wTimeStr)
+				if err == nil {
+					//fmt.Println("ii got it!!", wtime, err)
+					return wtime, nil
+				}
+			}
+			if err != nil {
+				log.Println("err parsing returned time", p.SubPods, err)
+				return time.Now(), errors.New("err parsing when")
+			}
+		}
+	}
+
 	//fmt.Printf("%+v\n", data.Res)
 	return time.Now(), errors.New("no primary answer")
+}
+
+func parseAgo(agoStr string) (wtime time.Time, err error) {
+	nmon := matchPart(agoStr, "months")
+	nday := matchPart(agoStr, "days")
+	nweek := matchPart(agoStr, "weeks")
+	fmt.Println(agoStr, nmon, nday, nweek)
+
+	return time.Now(), nil
+}
+
+func matchPart(str string, val string) int {
+	matcher := fmt.Sprintf("(\\d+)\\s+(?:\\b%s?\\b)", val)
+	fmt.Println(matcher)
+	theRE := regexp.MustCompile(matcher)
+
+	var theVal int
+	var err error
+	if v := theRE.FindAllStringSubmatch(str, 1); len(v) > 0 {
+		//fmt.Printf("ago: %v mon: %+v\n", agoStr, mon[0][1])
+		if len(v[0]) > 0 {
+			theVal, err = strconv.Atoi(v[0][1])
+			if err != nil {
+				theVal = 0
+			}
+		}
+	}
+	fmt.Println(theVal)
+	return theVal
 }

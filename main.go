@@ -1,9 +1,9 @@
 // Program `jrnl` is a command line journaling tool that parses a string with
 // a natural-language time, title, and entry and writes out an org-mode
 // entry to an org file.
-// Usage: jrnln [-f jrnl-file] [when:] [title.] [entry]
-// `when` is a natural-language time (today, next wednesday, march 17th); ends with `:`
-// `title` is the title for the entry; ends with `.`
+// Usage: jrnln [-f jrnl-file] [when.] [title:] [entry]
+// `when` is a natural-language time (today, next wednesday, march 17th); ends with `.`
+// `title` is the title for the entry; ends with `:`
 // `entry` is the text of the diary entry.
 // The entry is written to either environment variable JRNLFILE
 // or to the file specified in the command line [-f jrnl-file]
@@ -22,7 +22,7 @@
 //
 // If `when` is blank, then `today` is used for when
 // If title is blank, then the entry has no title (warning: if the entry text
-// has a period in it, then the title is everything up to the period)
+// has a colon in it, then the title is everything up to the colon!)
 // Tags can be defined with `@tag` and will be appended to the headline in org-mode
 // fashion as :@tag:
 
@@ -47,9 +47,20 @@ var (
 	defaultEditor     = "emacs"
 	defaultEditorArgs = []string{"-nw", "-Q"}
 	defaultOrgFile    = "./jrnl.org"
+	// command line usage function
+	usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "  %s [flags] [[when.] [title:] text]\n", os.Args[0])
+		fmt.Fprintln(flag.CommandLine.Output(), "  where 'when' is a time (today, next wed); period is required")
+		fmt.Fprintln(flag.CommandLine.Output(), "  where 'title' is the entry title; colon is required")
+		fmt.Fprintln(flag.CommandLine.Output(), "  where 'text' is the entry text; tags @tag allowed")
+		fmt.Fprintln(flag.CommandLine.Output(), "  With no args, external editor is opened\nFlags:")
+		flag.PrintDefaults()
+	}
 )
 
 func main() {
+	flag.Usage = usage
 	var orgfile = flag.String("f", "", "jrnl org file to save entry into")
 	flag.Parse()
 	if len(*orgfile) == 0 {
@@ -76,6 +87,7 @@ func main() {
 	}
 	//fmt.Printf("%+v, %+v\n", ent, err)
 
+	// convert entry to 2nd level headline, timestamp, and paragraph
 	out := ent.Print()
 	writeOrgFile(*orgfile, out)
 }
@@ -83,7 +95,7 @@ func main() {
 // writeOrgFile takes a filename and a byte slice as function args
 // 1. read the file and search for a top-level headline with today's date
 // 2. if not present, add a top-level headline
-// 3. save the entry (as a 2nd-level headline, timestamp and paragraph)
+// 3. save the byte slice (a 2nd-level headline, timestamp and paragraph)
 func writeOrgFile(outf string, out []byte) {
 	// read the file
 	orgContents, err := ioutil.ReadFile(outf)

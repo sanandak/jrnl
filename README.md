@@ -4,10 +4,10 @@ A go command-line program to add entries to a journal.
 
 ## Usage
 
-`jrnl [-f jrnl-file] [[when:] [title.] journal entry]`
+`jrnl [-f jrnl-file] [[when.] [title:] journal entry]`
 
-  - `when` is a natural language time (today, next wednesday, 3/14), terminated by a colon (`:`)
-  - `title` is the title for the entry, terminated by a period (`.)
+  - `when` is a natural language time (today, next wednesday, 3/14), terminated by a period (`.`)
+  - `title` is the title for the entry, terminated by a colon (`:`)
   - `journal entry` is the text of the journal entry
 
   - `jrnl-file` is where the entry is saved.
@@ -37,8 +37,10 @@ a more-complete implementation, with filtering, search, etc.
 
 This program doesn't have that because I use emacs to search the org file.
 
-Uses the fantastic library `github.com/olebedev/when` to parse the times.
+Time is parsed with WolframAlpha.
+
 
 # TODO
+Includes but doesn't use fantastic library `github.com/olebedev/when` to parse the times.  Maybe a command line flag?
 
-I want to learn about channels in go.  I will add a call to a web service to parse the when time (wolfram alpha? others?)
+I want to learn about channels in go - maybe use channels for calling WolframAlpha?

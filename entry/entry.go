@@ -69,13 +69,13 @@ func NewEntry(rawStr string) (entry *Entry, err error) {
 	entry.tags = tags
 
 	var whenIdx, titleIdx int
-	// search for `when string:`
-	whenIdx = strings.IndexByte(rawStr, ':')
+	// search for `when string.`
+	whenIdx = strings.IndexByte(rawStr, '.')
 	if whenIdx > 0 {
 		entry.whenStr = rawStr[:whenIdx]
 		rawStr = rawStr[whenIdx+1:]
 	}
-	if whenIdx == 0 { // bare `:`
+	if whenIdx == 0 { // bare `.`
 		entry.whenStr = "today"
 		rawStr = rawStr[1:]
 	}
@@ -83,13 +83,13 @@ func NewEntry(rawStr string) (entry *Entry, err error) {
 		entry.whenStr = "today"
 	}
 
-	// search for `title string.`
-	titleIdx = strings.IndexByte(rawStr, '.')
+	// search for `title string:`
+	titleIdx = strings.IndexByte(rawStr, ':')
 	if titleIdx > 0 {
 		entry.title = standardizeSpaces(rawStr[:titleIdx])
 		entry.text = standardizeSpaces(rawStr[titleIdx+1:])
 	}
-	if titleIdx == 0 { // bare . at start; no title
+	if titleIdx == 0 { // bare : at start; no title
 		entry.text = standardizeSpaces(rawStr[1:])
 	}
 	entry.entryTime = time.Now()
@@ -109,7 +109,12 @@ func (entry *Entry) Print() []byte {
 	// org-mode tags are delimited by : `:tag:tag2:`
 	titleLen := len(entry.title) + 2
 	if len(entry.tags) > 0 {
-		tagStr = strings.Join(entry.tags, ":")
+		var noAt []string
+		atRE := regexp.MustCompile(`^@`)
+		for _, t := range entry.tags {
+			noAt = append(noAt, atRE.ReplaceAllString(t, ""))
+		}
+		tagStr = strings.Join(noAt, ":")
 	}
 	//fmt.Println(tagStr, entry.tags)
 	if tagLen := len(tagStr); tagLen > 0 {
@@ -159,7 +164,7 @@ func (entry *Entry) parseWhenWolfram() (err error) {
 		entry.when = time.Now()
 		entry.whenErr = true
 	}
-	fmt.Printf("r: %+v %+v\n", wtime, err)
+	//fmt.Printf("r: %+v %+v\n", wtime, err)
 
 	return nil
 }

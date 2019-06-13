@@ -63,7 +63,7 @@ func TestParseTime(t *testing.T) {
 	}
 }
 func TestParseDate(t *testing.T) {
-	entry, _ := NewEntry("7/1/2019: title. text")
+	entry, _ := NewEntry("3/14/2019: title. text")
 	if entry.when.Month() != time.March && entry.when.Day() != 14 {
 		t.Errorf("err parsing %s. Got %+v expected 2019/3/14", entry.whenStr, entry.when)
 	}
