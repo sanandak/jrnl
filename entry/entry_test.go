@@ -33,7 +33,7 @@ func TestTime(t *testing.T) {
 }
 
 func TestParseTitle(t *testing.T) {
-	entry, _ := NewEntry(titleStr + ".")
+	entry, _ := NewEntry(titleStr + ":")
 	if entry.title != titleStr {
 		t.Errorf("expected \"%v\" got \"%v\"", titleStr, entry.title)
 	}
@@ -41,7 +41,7 @@ func TestParseTitle(t *testing.T) {
 }
 
 func TestParseText(t *testing.T) {
-	entry, _ := NewEntry(titleStr + "." + textStr)
+	entry, _ := NewEntry("." + titleStr + ":" + textStr)
 	if entry.text != textStrStd {
 		t.Errorf("expected \"%v\" got \"%v\"", textStrStd, entry.text)
 	}
@@ -49,7 +49,7 @@ func TestParseText(t *testing.T) {
 }
 
 func TestParseWhen(t *testing.T) {
-	entry, _ := NewEntry("friday: title. text")
+	entry, _ := NewEntry("friday. title: text")
 	// but is it the right friday???
 	if entry.when.Weekday() != time.Friday {
 		t.Errorf("err parsing %s. Got %+v expected %+v", entry.whenStr, entry.when.Weekday(), time.Friday)
@@ -57,19 +57,19 @@ func TestParseWhen(t *testing.T) {
 }
 
 func TestParseTime(t *testing.T) {
-	entry, _ := NewEntry("7pm today: title. text")
+	entry, _ := NewEntry("7pm today. title: text")
 	if entry.when.Hour() != 19 {
 		t.Errorf("err parsing %s. Got %+v expected %+v", entry.whenStr, entry.when.Hour(), 19)
 	}
 }
 func TestParseDate(t *testing.T) {
-	entry, _ := NewEntry("3/14/2019: title. text")
+	entry, _ := NewEntry("3/14/2019. title: text")
 	if entry.when.Month() != time.March && entry.when.Day() != 14 {
 		t.Errorf("err parsing %s. Got %+v expected 2019/3/14", entry.whenStr, entry.when)
 	}
 }
 func TestTags(t *testing.T) {
-	entry, _ := NewEntry("today: title. has @tag.")
+	entry, _ := NewEntry("today. title: has @tag.")
 	if entry.tags[0] != "@tag" {
 		t.Errorf("err parsing tags in %s. got %s expected @tag", entry.text, entry.tags)
 	}

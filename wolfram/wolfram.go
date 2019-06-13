@@ -24,7 +24,6 @@ var (
 		"3:04:05 pm MST | Monday, January 2, 2006",
 		"Monday, January 2, 2006",
 	}
-	// need to parse "x months y days ago/from now" and "x days ago/from now"
 )
 
 // borrowed from github.com/Krognol/go-wolfram
@@ -138,7 +137,7 @@ func QueryWolfram(query string) (wtime time.Time, err error) {
 	}
 
 	//fmt.Printf("%+v\n", data.Res)
-	return time.Now(), errors.New("no primary answer")
+	return time.Now(), errors.New("unable to parse when")
 }
 
 func parseAgo(agoStr string) (wtime time.Time, err error) {
