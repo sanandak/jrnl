@@ -27,9 +27,10 @@ may include tags thus: `@tag1 and @tag2`, which will be added to the headline as
 Use a period alone for when to indicate now/today.  This has the added benefit that subsequent periods are part of the title/text and not accidentally part of the `when`
 
 `Title: First sentence.  And the second`
-Will be intrepred as `when`: `Title: First Sentence` and `text`:`And the second.`
-`.Title: First sentence.  And the second`
-Will be interpreted as `when`: now and `title`:Title etc
+will be intrepred wrongly as `when`: "Title: First Sentence" and `text` : "And the second."
+
+But `. Title: First sentence.  And the second`
+Will be interpreted as `when`: "now" and `title`:"Title" etc
 
 ## Build
 
