@@ -3,21 +3,20 @@
 //
 // Strings are of the form [when:] [title.] entry
 //
-//   `[when:]` is an optional entry in natural language (today, next wednesday, etc.)
-//      followed by a colon (`:`)
-//   `[title.]` is an optional title string ending with a period (`.`)
+//   `[when.]` is an optional entry in natural language (today, next wednesday, etc.)
+//      followed by a period (`.`)
+//   `[title:]` is an optional title string ending with a colon (`:`)
 //   `entry` is the text of the diary entry
 //
 // This string is parsed and formatted as an org entry.
 // For example:
-// `jrnl today: title is here. entry text with @tag1 and @tag2`
+// `jrnl today. title is here: entry text with @tag1 and @tag2`
 /*
-   ** Title Is Here                                    :@tag1:@tag2:
+   ** Title Is Here                                    :tag1:tag2:
    <2019/06/11 Tue 15:32>
    entry text with @tag1 and @tag2
 */
-// I use the excellent github.com/olebedev/when library to parse natural language
-// time.
+// I use the WolframAlpha to parse the time.
 package entry
 
 import (
@@ -142,6 +141,7 @@ func (entry *Entry) Print() []byte {
 
 func (entry *Entry) parseWhen() (err error) {
 	w := when.New(nil)
+
 	w.Add(en.All...)
 	w.Add(common.All...)
 
