@@ -6,13 +6,10 @@ package wolfram
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"regexp"
-	"strconv"
 	"time"
 )
 
@@ -28,7 +25,7 @@ var (
 
 // borrowed from github.com/Krognol/go-wolfram
 
-// QueryResp is the top level response from WA
+// QueryResp is the top level response from WolframAlpha
 type QueryResp struct {
 	Res QueryRes `json:"queryresult"`
 }
@@ -41,6 +38,7 @@ type QueryRes struct {
 
 // Pod is an object (up to NumPod Pods) with the answers
 // the key Primary tells us which pod is, well, the primary one
+// the key Title is useful.  If the primary doesn't parse check the "Input interpretation" pod
 type Pod struct {
 	//The subpod elements of the pod
 	SubPods []SubPod `json:"subpods"`
@@ -49,7 +47,7 @@ type Pod struct {
 	Title   string `json:"title"`
 }
 
-// SubPod - there is one subpod per pod, and the plaintext has the answer in...plaintext
+// SubPod - there is one(?) subpod per pod, and the plaintext has the answer in...plaintext
 type SubPod struct {
 	//Textual representation of the subpod
 	Plaintext string `json:"plaintext"`
@@ -138,33 +136,4 @@ func QueryWolfram(query string) (wtime time.Time, err error) {
 
 	//fmt.Printf("%+v\n", data.Res)
 	return time.Now(), errors.New("unable to parse when")
-}
-
-func parseAgo(agoStr string) (wtime time.Time, err error) {
-	nmon := matchPart(agoStr, "months")
-	nday := matchPart(agoStr, "days")
-	nweek := matchPart(agoStr, "weeks")
-	fmt.Println(agoStr, nmon, nday, nweek)
-
-	return time.Now(), nil
-}
-
-func matchPart(str string, val string) int {
-	matcher := fmt.Sprintf("(\\d+)\\s+(?:\\b%s?\\b)", val)
-	fmt.Println(matcher)
-	theRE := regexp.MustCompile(matcher)
-
-	var theVal int
-	var err error
-	if v := theRE.FindAllStringSubmatch(str, 1); len(v) > 0 {
-		//fmt.Printf("ago: %v mon: %+v\n", agoStr, mon[0][1])
-		if len(v[0]) > 0 {
-			theVal, err = strconv.Atoi(v[0][1])
-			if err != nil {
-				theVal = 0
-			}
-		}
-	}
-	fmt.Println(theVal)
-	return theVal
 }

@@ -116,6 +116,8 @@ func (entry *Entry) Print() []byte {
 		tagStr = strings.Join(noAt, ":")
 	}
 	//fmt.Println(tagStr, entry.tags)
+	// headline should have tags right justified
+	// ** Title            :tag:<--column 80
 	if tagLen := len(tagStr); tagLen > 0 {
 		tagStr = ":" + tagStr + ":"
 		tagFmtLen := 80 - titleLen
@@ -139,6 +141,7 @@ func (entry *Entry) Print() []byte {
 	return out.Bytes()
 }
 
+// parseWhen uses olebedev/when to parse the `when` string
 func (entry *Entry) parseWhen() (err error) {
 	w := when.New(nil)
 
@@ -156,6 +159,8 @@ func (entry *Entry) parseWhen() (err error) {
 
 	return nil
 }
+
+// parseWhenWolfram uses sanandak/wolfram and wolframAlpha to parse `when`
 func (entry *Entry) parseWhenWolfram() (err error) {
 	wtime, err := wolfram.QueryWolfram(entry.whenStr)
 	if err == nil {

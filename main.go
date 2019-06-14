@@ -77,7 +77,7 @@ func main() {
 	if len(args) == 0 { // open editor
 		raw = useEditor()
 		//fmt.Println(raw)
-	} else { // get entry for command line
+	} else { // get entry from command line
 		raw = strings.Join(flag.Args(), " ")
 	}
 	//fmt.Println("raw", raw)
