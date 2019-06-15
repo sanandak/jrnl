@@ -86,10 +86,10 @@ func NewEntry(rawStr string) (entry *Entry, err error) {
 	titleIdx = strings.IndexByte(rawStr, ':')
 	if titleIdx > 0 {
 		entry.title = standardizeSpaces(rawStr[:titleIdx])
-		entry.text = standardizeSpaces(rawStr[titleIdx+1:])
+		entry.text = rawStr[titleIdx+1:]
 	}
 	if titleIdx == 0 { // bare : at start; no title
-		entry.text = standardizeSpaces(rawStr[1:])
+		entry.text = rawStr[1:]
 	}
 	entry.entryTime = time.Now()
 	entry.parseWhenWolfram()
